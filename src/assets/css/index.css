@@ -1,0 +1,57 @@
+@import url(./reset.css);
+@import url(./fonts.css);
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Montserrat";
+  font-weight: var(--fw2);
+  font-size: 14px;
+  line-height: 175%;
+  color: var(--text-color1);
+  --fw1: 400;
+  --fw2: 500;
+  --fw3: 600;
+}
+
+body[data-theme="light"] {
+  --text-color1: #000000;
+  --text-color2: #848484;
+  --link-color1: #366eff;
+  --bg1: #f9f9fa;
+  --bg2: #fcfcfc;
+  --bg3: #ffffff;
+  --shadow1: 0px 2px 10px rgba(109, 109, 109, 0.25),
+    inset 0px 1px 0px rgba(255, 255, 255, 0.3);
+  --shadow2: 1px 1px 2px rgba(0, 0, 0, 0.1), -1px -1px 2px rgba(0, 0, 0, 0.1);
+  --border-color1: #cfcfcf;
+}
+
+body[data-theme="dark"] {
+  --text-color1: #ffffff;
+  --text-color2: #a9a9a9;
+  --link-color1: #ffffff;
+  --bg1: #212e37;
+  --bg2: #2b3743;
+  --bg3: #1d242b;
+  --shadow1: 0px 2px 10px rgba(0, 0, 0, 0.25),
+    inset 0px 1px 0px rgba(63, 63, 63, 0.3);
+  --shadow2: 1px 1px 2px rgba(0, 0, 0, 0.6), -1px -1px 2px rgba(0, 0, 0, 0.6);
+  --border-color1: #000000;
+}
+
+h1 {
+  font-size: 26px;
+  font-weight: var(--fw3);
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: var(--fw3);
+}
+
+a {
+  color: var(--link-color1);
+}
