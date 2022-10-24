@@ -97,6 +97,7 @@ export const SetNewPasswordForm = () => {
             }
             {...register("password")}
             error={!!errors.password}
+            autoComplete="new-password"
           />
         </FormControl>
         <FormControl variant="standard">
@@ -120,6 +121,7 @@ export const SetNewPasswordForm = () => {
             }
             {...register("confirmPassword")}
             error={!!errors.confirmPassword}
+            autoComplete="new-password"
           />
         </FormControl>
       </FieldsContainer>
