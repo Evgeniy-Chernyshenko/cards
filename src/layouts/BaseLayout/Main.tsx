@@ -1,18 +1,14 @@
-import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { Outlet } from "react-router-dom";
+import { Breadcrumbs, BreadcrumbsType } from "./Breadcrumbs";
 import { Container } from "./Container";
 
-const Wrapper = styled.main<{ center: boolean | undefined }>`
+const Wrapper = styled.main`
   flex-grow: 1;
   background-color: var(--bg1);
   padding: 35px 0;
-  ${(props) =>
-    props.center &&
-    css`
-      display: flex;
-      align-items: center;
-    `};
+  display: flex;
+  flex-direction: column;
 `;
 
 const WrapContainer = styled.div`
@@ -23,17 +19,31 @@ const WrapContainer = styled.div`
   background-color: var(--bg3);
 `;
 
-export const Main = ({ center, wrap }: PropsType) => {
+const CenterContainer = styled.div`
+  margin: -35px auto 0 auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+export const Main = ({ center, wrap, breadcrumbs }: PropsType) => {
+  let Component = <Outlet />;
+
+  if (wrap) {
+    Component = <WrapContainer>{Component}</WrapContainer>;
+  }
+
+  if (center) {
+    Component = <CenterContainer>{Component}</CenterContainer>;
+  }
+
   return (
-    <Wrapper center={center}>
+    <Wrapper>
       <Container>
-        {wrap ? (
-          <WrapContainer>
-            <Outlet />
-          </WrapContainer>
-        ) : (
-          <Outlet />
-        )}
+        {breadcrumbs === true && <Breadcrumbs />}
+        {typeof breadcrumbs === "object" && <Breadcrumbs {...breadcrumbs} />}
+        {Component}
       </Container>
     </Wrapper>
   );
@@ -42,4 +52,5 @@ export const Main = ({ center, wrap }: PropsType) => {
 type PropsType = {
   center?: boolean;
   wrap?: boolean;
+  breadcrumbs?: boolean | BreadcrumbsType;
 };

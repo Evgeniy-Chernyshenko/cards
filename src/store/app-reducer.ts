@@ -8,6 +8,7 @@ const paletteMode =
   localStorage.getItem("paletteMode") === "dark" ? "dark" : "light";
 
 const initialState: AppStateType = {
+  loadingProcesses: 0,
   isLoading: false,
   snackbar: { message: null, variant: "default" },
   isInit: false,
@@ -20,7 +21,12 @@ export const appReducer = (
 ): AppStateType => {
   switch (action.type) {
     case "APP/SET_IS_LOADING": {
-      return { ...state, ...action.payload };
+      const loadingProcesses = action.payload.isLoading
+        ? state.loadingProcesses + 1
+        : state.loadingProcesses - 1;
+      const isLoading = !!loadingProcesses;
+
+      return { ...state, loadingProcesses, isLoading };
     }
 
     case "APP/SET_SNACKBAR_MESSAGE": {
@@ -83,6 +89,7 @@ export const appThunks = {
 };
 
 export type AppStateType = {
+  loadingProcesses: number;
   isLoading: boolean;
   snackbar: {
     message: null | string;

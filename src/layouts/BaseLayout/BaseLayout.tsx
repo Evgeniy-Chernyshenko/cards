@@ -8,6 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import styled from "@emotion/styled";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { appActions } from "../../store/app-reducer";
+import { BreadcrumbsType } from "./Breadcrumbs";
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -15,7 +16,7 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-export const BaseLayout = ({ center, wrap }: PropsType) => {
+export const BaseLayout = ({ center, wrap, breadcrumbs }: PropsType) => {
   const isLoading = useAppSelector((state) => state.app.isLoading);
   const snackbar = useAppSelector((state) => state.app.snackbar);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -47,12 +48,10 @@ export const BaseLayout = ({ center, wrap }: PropsType) => {
   return (
     <Wrapper>
       {isLoading && (
-        <LinearProgress
-          sx={{ position: "absolute", width: "100%", zIndex: 2 }}
-        />
+        <LinearProgress sx={{ position: "fixed", width: "100%", zIndex: 2 }} />
       )}
       <Header />
-      <Main center={center} wrap={wrap} />
+      <Main center={center} wrap={wrap} breadcrumbs={breadcrumbs} />
     </Wrapper>
   );
 };
@@ -60,4 +59,5 @@ export const BaseLayout = ({ center, wrap }: PropsType) => {
 type PropsType = {
   center?: boolean;
   wrap?: boolean;
+  breadcrumbs?: boolean | BreadcrumbsType;
 };

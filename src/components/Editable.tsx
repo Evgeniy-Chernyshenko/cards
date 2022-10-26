@@ -52,6 +52,10 @@ export const Editable = ({
     sendValue();
   };
 
+  const handleBlur = () => {
+    sendValue();
+  };
+
   const handleEditClick = () => {
     setIsEditMode(true);
   };
@@ -94,6 +98,7 @@ export const Editable = ({
       error={error}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
+      onBlur={handleBlur}
       variant="standard"
       autoFocus
       InputProps={{
@@ -102,9 +107,7 @@ export const Editable = ({
             variant="contained"
             disabled={error || isLoading}
             sx={{
-              boxShadow: "none",
               borderRadius: "2px",
-              "&:hover": { boxShadow: "none" },
               fontSize: 12,
               fontWeight: 400,
               padding: "2px 10px",

@@ -6,6 +6,7 @@ import { Button } from "@mui/material";
 import { useAppSelector } from "../../../hooks/useAppSelector";
 import styled from "@emotion/styled";
 import { AppThemeToogler } from "./AppThemeToogler";
+import { PATHS } from "../../../app/AppRoutes";
 
 const Wrapper = styled.nav`
   background: var(--bg2);
@@ -44,7 +45,7 @@ export const Header = () => {
     <Wrapper>
       <Container>
         <NavContainer>
-          <Link to="">
+          <Link to={PATHS.index}>
             {paletteMode === "light" ? <LogoLight /> : <LogoDark />}
           </Link>
           <ItemsContainer>
@@ -52,7 +53,7 @@ export const Header = () => {
             {user ? (
               <UserItem {...user} />
             ) : (
-              <Button variant="contained" component={Link} to="/signin">
+              <Button variant="contained" component={Link} to={PATHS.signin}>
                 Sign in
               </Button>
             )}

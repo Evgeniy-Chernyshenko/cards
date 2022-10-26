@@ -1,10 +1,14 @@
-import { AxiosError } from "axios";
+import { AxiosError, CanceledError } from "axios";
 import { appActions } from "../store/app-reducer";
 import { authActions } from "../store/auth-reducer";
 import { AppDispatch } from "../store/store";
 
 export const handleApiError = (error: unknown, dispatch: AppDispatch) => {
   const e = error as Error | AxiosError;
+
+  if (e instanceof CanceledError) {
+    return;
+  }
 
   const isAxiosError = e instanceof AxiosError;
 

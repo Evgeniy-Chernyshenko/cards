@@ -1,38 +1,33 @@
 import { apiClient } from "./api-client";
 
 export const authApi = {
-  signup: async (data: RegisterParamsType) =>
-    (await apiClient.post<ResponseType>("auth/register", data)).data,
-  signin: async (data: LoginParamsType) =>
-    (await apiClient.post<ResponseType<LoginResponseType>>("auth/login", data))
-      .data,
-  signout: async () => (await apiClient.delete<ResponseType>("auth/me")).data,
+  signup: async (values: RegisterParamsType) =>
+    (await apiClient.post("auth/register", values)).data,
+  signin: async (values: LoginParamsType) =>
+    (await apiClient.post<LoginResponseType>("auth/login", values)).data,
+  signout: async () => (await apiClient.delete("auth/me")).data,
   getUser: async () =>
-    (await apiClient.post<ResponseType<LoginResponseType>>("auth/me")).data,
-  sendRestorePasswordToken: async (data: SendRestorePasswordTokenParamsType) =>
+    (await apiClient.post<LoginResponseType>("auth/me")).data,
+  sendRestorePasswordToken: async (
+    values: SendRestorePasswordTokenParamsType
+  ) =>
     (
-      await apiClient.post<ResponseType>(
+      await apiClient.post(
         `${process.env.REACT_APP_BASE_MAIL_URL}/auth/forgot`,
-        data
+        values
       )
     ).data,
-  setNewPassword: async (data: SetNewPasswordParamsType) =>
+  setNewPassword: async (values: SetNewPasswordParamsType) =>
     (
-      await apiClient.post<ResponseType>(
+      await apiClient.post(
         `${process.env.REACT_APP_BASE_MAIL_URL}/auth/set-new-password`,
-        data
+        values
       )
     ).data,
-  updateUser: async (data: UpdateUserParamsType) =>
-    (
-      await apiClient.put<ResponseType<{ updatedUser: LoginResponseType }>>(
-        "auth/me",
-        data
-      )
-    ).data,
+  updateUser: async (values: UpdateUserParamsType) =>
+    (await apiClient.put<{ updatedUser: LoginResponseType }>("auth/me", values))
+      .data,
 };
-
-type ResponseType<T = {}> = T & { error?: string };
 
 export type RegisterParamsType = {
   email: string;
@@ -45,7 +40,7 @@ export type LoginParamsType = {
   rememberMe: boolean;
 };
 
-export type LoginResponseType = {
+export type UserType = {
   _id: string;
   email: string;
   rememberMe: boolean;
@@ -55,8 +50,13 @@ export type LoginResponseType = {
   publicCardPacksCount: number;
   created: string;
   updated: string;
-  avatar?: null | string;
+  __v: number;
+  token: string;
+  tokenDeathTime: number;
+  avatar?: string;
 };
+
+type LoginResponseType = UserType;
 
 export type SendRestorePasswordTokenParamsType = {
   email: string;

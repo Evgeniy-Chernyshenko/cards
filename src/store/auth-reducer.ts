@@ -1,11 +1,11 @@
 import {
   authApi,
   LoginParamsType,
-  LoginResponseType,
   RegisterParamsType,
   SendRestorePasswordTokenParamsType,
   SetNewPasswordParamsType,
   UpdateUserParamsType,
+  UserType,
 } from "../api/auth-api";
 import { handleApiError } from "../utils/handle-api-error";
 import { appActions } from "./app-reducer";
@@ -23,6 +23,7 @@ export const authReducer = (
         ...state,
         ...action.payload,
       };
+
     default: {
       return state;
     }
@@ -147,7 +148,7 @@ export const authThunks = {
     },
 };
 
-type UserDomainType = null | LoginResponseType;
+type UserDomainType = null | UserType;
 
 export type AuthActionType = InferActionTypes<typeof authActions>;
 

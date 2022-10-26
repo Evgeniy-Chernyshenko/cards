@@ -1,5 +1,5 @@
 import mockUserPic from "../../../assets/images/mock-user-pic.png";
-import { ListItemIcon, Menu, MenuItem } from "@mui/material";
+import { ListItemIcon, MenuItem } from "@mui/material";
 import { Person, Logout } from "@mui/icons-material";
 import { MouseEvent, useState } from "react";
 import { Link } from "react-router-dom";
@@ -8,6 +8,7 @@ import { authThunks } from "../../../store/auth-reducer";
 import styled from "@emotion/styled";
 import { RootStateType } from "../../../store/store";
 import { PATHS } from "../../../app/AppRoutes";
+import { DropDownMenu } from "../../../components/DropDownMenu";
 
 const Wrapper = styled.div`
   display: flex;
@@ -51,34 +52,9 @@ export const UserItem = (props: NonNullable<RootStateType["auth"]["user"]>) => {
         <UserName>{props.name}</UserName>
         <UserPic src={mockUserPic} alt={props.name} />
       </Wrapper>
-      <Menu
+      <DropDownMenu
         anchorEl={anchorEl}
-        open={!!anchorEl}
-        onClose={handleClose}
-        onClick={handleClose}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            border: "1px solid var(--border-color1)",
-            overflow: "visible",
-            boxShadow: "0px 2px 15px rgba(0, 0, 0, 0.06)",
-            mt: "10px",
-            "&:before": {
-              content: "''",
-              display: "block",
-              position: "absolute",
-              top: -1,
-              right: 14,
-              width: 10,
-              height: 10,
-              bgcolor: "background.paper",
-              transform: "translateY(-50%) rotate(45deg)",
-              zIndex: 0,
-              borderLeft: "1px solid var(--border-color1)",
-              borderTop: "1px solid var(--border-color1)",
-            },
-          },
-        }}
+        handleClose={handleClose}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
@@ -94,7 +70,7 @@ export const UserItem = (props: NonNullable<RootStateType["auth"]["user"]>) => {
           </ListItemIcon>
           Log Out
         </MenuItem>
-      </Menu>
+      </DropDownMenu>
     </>
   );
 };
