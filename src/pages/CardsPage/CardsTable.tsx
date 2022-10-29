@@ -74,17 +74,31 @@ export const CardsTable = (props: PropsType) => {
     dispatch(cardsActions.setFilters({ sortCards: domainDirection + column }));
   };
 
-  const handleEditCard = (id: string) => () => {
-    dispatch(
+  const handleEditCard = (id: string) => async () => {
+    const updatedCard = await dispatch(
       cardsThunks.updateCard({
         _id: id,
         question: `Edited question ${Date.now()}`,
       })
     );
+
+    if (!updatedCard || !props.packId) {
+      return;
+    }
+
+    dispatch(cardsThunks.setCurrent(props.packId));
   };
 
-  const handleDeleteCard = (id: string) => () => {
-    dispatch(cardsThunks.deleteCard({ id }));
+  const handleDeleteCard = (id: string) => async () => {
+    const deletedCard = await dispatch(cardsThunks.deleteCard({ id }));
+
+    if (!deletedCard || !props.packId || !current) {
+      return;
+    }
+
+    current.items.length > 1 || filters.page === 1
+      ? dispatch(cardsThunks.setCurrent(props.packId))
+      : dispatch(cardsActions.setFilters({ page: 1 }));
   };
 
   return (
@@ -169,7 +183,7 @@ export const CardsTable = (props: PropsType) => {
                       timeStyle: "short",
                     })}
                   </TableCell>
-                  <TableCell>
+                  <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }}>
                     <Rating value={v.grade} onChange={() => {}} />
                   </TableCell>
                   {current.isMyPack && (
@@ -241,4 +255,5 @@ export const CardsTable = (props: PropsType) => {
 
 type PropsType = {
   isChangePackLoading: boolean;
+  packId: void | string;
 };

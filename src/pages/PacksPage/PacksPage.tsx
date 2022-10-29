@@ -1,15 +1,12 @@
 import styled from "@emotion/styled";
 import { Button } from "@mui/material";
-import { useEffect, useState } from "react";
+import _ from "lodash";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import {
-  FiltersType,
-  initialFilters,
-  packsActions,
-  packsThunks,
-} from "../../store/packs-reducer";
+import { packsActions, packsThunks } from "../../store/packs-reducer";
+import { convertString } from "../../utils/convertString";
 import { PacksFilters } from "./PacksFilters";
 import { PacksTable } from "./PacksTable";
 
@@ -31,6 +28,7 @@ export const PacksPage = () => {
   const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isInit, setIsInit] = useState(false);
+  const setSearchParamsRef = useRef(setSearchParams);
 
   useEffect(() => {
     return () => {
@@ -40,57 +38,35 @@ export const PacksPage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isInit) {
-      return;
-    }
+    isInit && dispatch(packsThunks.setCurrent());
+  }, [filters, isInit, dispatch]);
 
-    const packName = searchParams.get("packName");
-    const min = parseInt(String(searchParams.get("min")));
-    const max = parseInt(String(searchParams.get("max")));
-    const sortPacks = searchParams.get("sortPacks");
-    const page = parseInt(String(searchParams.get("page")));
-    const pageCount = parseInt(String(searchParams.get("pageCount")));
-    const showMyPacks = searchParams.get("showMyPacks");
-
-    dispatch(
-      packsActions.setFilters({
-        ...(packName && { packName }),
-        ...(!isNaN(min) && { min }),
-        ...(!isNaN(max) && { max }),
-        ...(sortPacks && { sortPacks }),
-        ...(!isNaN(page) && { page }),
-        ...(!isNaN(pageCount) && { pageCount }),
-        ...(showMyPacks &&
-          ["true", "false"].includes(showMyPacks) && {
-            showMyPacks: JSON.parse(showMyPacks) as boolean,
-          }),
-      })
+  useEffect(() => {
+    const searchParamsFilters = _.omitBy(
+      {
+        packName: searchParams.get("packName"),
+        min: convertString<number>(searchParams.get("min")),
+        max: convertString<number>(searchParams.get("max")),
+        sortPacks: searchParams.get("sortPacks"),
+        page: convertString<number>(searchParams.get("page")),
+        pageCount: convertString<number>(searchParams.get("pageCount")),
+        showMyPacks: convertString<boolean>(searchParams.get("showMyPacks")),
+      },
+      _.isNil
     );
 
-    setIsInit(true);
+    dispatch(packsActions.setFilters(searchParamsFilters));
+
+    !isInit && setIsInit(true);
   }, [isInit, searchParams, dispatch]);
 
   useEffect(() => {
-    isInit && dispatch(packsThunks.setCurrent());
-  }, [isInit, filters, dispatch]);
-
-  useEffect(() => {
-    if (!isInit) {
-      return;
-    }
-
-    const differenceFilters: any = {};
-    for (const prop in filters) {
-      if (
-        filters[prop as keyof FiltersType] !==
-        initialFilters[prop as keyof FiltersType]
-      ) {
-        differenceFilters[prop] = filters[prop as keyof FiltersType];
-      }
-    }
-
-    setSearchParams(new URLSearchParams(differenceFilters), { replace: true });
-  }, [isInit, filters, setSearchParams]);
+    isInit &&
+      setSearchParamsRef.current(
+        new URLSearchParams(filters as { [key: string]: string }),
+        { replace: true }
+      );
+  }, [filters, isInit, setSearchParamsRef]);
 
   const handleAddNewPack = async () => {
     (await dispatch(

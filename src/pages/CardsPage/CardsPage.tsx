@@ -6,14 +6,13 @@ import {
   ListItemIcon,
   MenuItem,
 } from "@mui/material";
-import { useEffect, useState, MouseEvent } from "react";
+import { useEffect, useState, MouseEvent, useRef } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import {
   cardsActions,
   cardsThunks,
-  FiltersType,
   initialFilters,
 } from "../../store/cards-reducer";
 import Menu from "@mui/icons-material/Menu";
@@ -23,6 +22,8 @@ import { CardsFilters } from "./CardsFilters";
 import { CardsTable } from "./CardsTable";
 import { packsThunks } from "../../store/packs-reducer";
 import { PATHS } from "../../app/AppRoutes";
+import { convertString } from "../../utils/convertString";
+import _ from "lodash";
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -64,7 +65,6 @@ export const CardsPage = () => {
   const isLoading = useAppSelector((state) => state.app.isLoading);
   const filters = useAppSelector((state) => state.cards.filters);
   const dispatch = useAppDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [isInit, setIsInit] = useState(false);
   const { packId } = useParams();
   const current = useAppSelector((state) => state.cards.current);
@@ -72,6 +72,8 @@ export const CardsPage = () => {
   const navigate = useNavigate();
   const [editedPackName, setEditedPackName] = useState<null | string>(null);
   const [isChangePackLoading, setIsChangePackLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const setSearchParamsRef = useRef(setSearchParams);
 
   useEffect(() => {
     return () => {
@@ -81,46 +83,32 @@ export const CardsPage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isInit) {
-      return;
-    }
+    isInit && packId && dispatch(cardsThunks.setCurrent(packId));
+  }, [filters, isInit, packId, dispatch]);
 
-    const question = searchParams.get("packName");
-    const page = parseInt(String(searchParams.get("page")));
-    const pageCount = parseInt(String(searchParams.get("pageCount")));
-
-    dispatch(
-      cardsActions.setFilters({
-        ...(question && { question }),
-        ...(!isNaN(page) && { page }),
-        ...(!isNaN(pageCount) && { pageCount }),
-      })
+  useEffect(() => {
+    const searchParamsFilters = _.omitBy(
+      {
+        cardQuestion: searchParams.get("cardQuestion"),
+        page: convertString<number>(searchParams.get("page")),
+        pageCount: convertString<number>(searchParams.get("pageCount")),
+        sortCards: searchParams.get("sortCards"),
+      },
+      _.isNil
     );
 
-    setIsInit(true);
+    dispatch(cardsActions.setFilters(searchParamsFilters));
+
+    !isInit && setIsInit(true);
   }, [isInit, searchParams, dispatch]);
 
   useEffect(() => {
-    isInit && packId && dispatch(cardsThunks.setCurrent(packId));
-  }, [isInit, packId, filters, dispatch]);
-
-  useEffect(() => {
-    if (!isInit) {
-      return;
-    }
-
-    const differenceFilters: any = {};
-    for (const prop in filters) {
-      if (
-        filters[prop as keyof FiltersType] !==
-        initialFilters[prop as keyof FiltersType]
-      ) {
-        differenceFilters[prop] = filters[prop as keyof FiltersType];
-      }
-    }
-
-    setSearchParams(new URLSearchParams(differenceFilters), { replace: true });
-  }, [isInit, filters, setSearchParams]);
+    isInit &&
+      setSearchParamsRef.current(
+        new URLSearchParams(filters as { [key: string]: string }),
+        { replace: true }
+      );
+  }, [filters, isInit]);
 
   if (!current) {
     return (
@@ -138,19 +126,24 @@ export const CardsPage = () => {
     setAnchorEl(null);
   };
 
-  const handleAddCard = () => {
-    packId &&
-      dispatch(
-        cardsThunks.createCard({
-          cardsPack_id: packId,
-          question: `New question ${Date.now()}`,
-        })
-      );
+  const handleAddCard = async () => {
+    if (!packId) {
+      return;
+    }
+
+    const newCard = await dispatch(
+      cardsThunks.createCard({
+        cardsPack_id: packId,
+        question: `New question ${Date.now()}`,
+      })
+    );
+
+    newCard && dispatch(cardsThunks.setCurrent(packId));
   };
 
   const handleLearnPack = () => {};
 
-  const handleEditMyPack = async () => {
+  const handleEditPack = async () => {
     if (!packId) {
       return;
     }
@@ -169,7 +162,7 @@ export const CardsPage = () => {
     updatedCardsPack && setEditedPackName(updatedCardsPack.name);
   };
 
-  const handleDeleteMyPack = async () => {
+  const handleDeletePack = async () => {
     if (!packId) {
       return;
     }
@@ -226,7 +219,10 @@ export const CardsPage = () => {
       ) : (
         <>
           <CardsFilters />
-          <CardsTable isChangePackLoading={isChangePackLoading} />
+          <CardsTable
+            packId={packId}
+            isChangePackLoading={isChangePackLoading}
+          />
         </>
       )}
 
@@ -236,13 +232,13 @@ export const CardsPage = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={handleEditMyPack}>
+        <MenuItem onClick={handleEditPack}>
           <ListItemIcon>
             <ModeEdit />
           </ListItemIcon>
           Edit
         </MenuItem>
-        <MenuItem onClick={handleDeleteMyPack}>
+        <MenuItem onClick={handleDeletePack}>
           <ListItemIcon>
             <Delete />
           </ListItemIcon>

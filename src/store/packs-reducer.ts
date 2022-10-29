@@ -35,22 +35,6 @@ export const packsReducer = (
       };
 
     case "PACKS/SET_FILTERS": {
-      let isEqual = true;
-      for (const prop in action.payload.filters) {
-        if (
-          action.payload.filters[prop as keyof FiltersType] !==
-          state.filters[prop as keyof FiltersType]
-        ) {
-          isEqual = false;
-
-          break;
-        }
-      }
-
-      if (isEqual) {
-        return state;
-      }
-
       const filtersCopy = { ...state.filters };
 
       if (action.payload.filters.page === undefined) {
@@ -62,9 +46,15 @@ export const packsReducer = (
         delete filtersCopy["min"];
       }
 
+      const resultFilters = { ...filtersCopy, ...action.payload.filters };
+
+      if (_.isEqual(resultFilters, state.filters)) {
+        return state;
+      }
+
       return {
         ...state,
-        filters: { ...filtersCopy, ...action.payload.filters },
+        filters: resultFilters,
       };
     }
 

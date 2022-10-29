@@ -31,31 +31,21 @@ export const cardsReducer = (
       };
 
     case "CARDS/SET_FILTERS": {
-      let isEqual = true;
-      for (const prop in action.payload.filters) {
-        if (
-          action.payload.filters[prop as keyof FiltersType] !==
-          state.filters[prop as keyof FiltersType]
-        ) {
-          isEqual = false;
-
-          break;
-        }
-      }
-
-      if (isEqual) {
-        return state;
-      }
-
       const filtersCopy = { ...state.filters };
 
       if (action.payload.filters.page === undefined) {
         filtersCopy.page = 1;
       }
 
+      const resultFilters = { ...filtersCopy, ...action.payload.filters };
+
+      if (_.isEqual(resultFilters, state.filters)) {
+        return state;
+      }
+
       return {
         ...state,
-        filters: { ...filtersCopy, ...action.payload.filters },
+        filters: resultFilters,
       };
     }
 
@@ -142,7 +132,7 @@ export const cardsThunks = {
       }
     },
   createCard:
-    (data: CreateCardParamsType): AppThunk =>
+    (data: CreateCardParamsType): AppThunk<Promise<CardType | void>> =>
     async (dispatch) => {
       dispatch(appActions.setIsLoading(true));
 
@@ -153,7 +143,8 @@ export const cardsThunks = {
             `Card "${newCard.question}" was created`
           )
         );
-        dispatch(cardsThunks.setCurrent(newCard.cardsPack_id));
+
+        return newCard;
       } catch (e) {
         handleApiError(e, dispatch);
       } finally {
@@ -161,7 +152,7 @@ export const cardsThunks = {
       }
     },
   deleteCard:
-    (data: DeleteCardParamsType): AppThunk =>
+    (data: DeleteCardParamsType): AppThunk<Promise<CardType | void>> =>
     async (dispatch) => {
       dispatch(appActions.setIsLoading(true));
 
@@ -172,7 +163,8 @@ export const cardsThunks = {
             `Pack "${deletedCard.question}" was deleted`
           )
         );
-        dispatch(cardsThunks.setCurrent(deletedCard.cardsPack_id));
+
+        return deletedCard;
       } catch (e) {
         handleApiError(e, dispatch);
       } finally {
@@ -180,18 +172,19 @@ export const cardsThunks = {
       }
     },
   updateCard:
-    (data: UpdateCardParamsType): AppThunk =>
+    (data: UpdateCardParamsType): AppThunk<Promise<CardType | void>> =>
     async (dispatch) => {
       dispatch(appActions.setIsLoading(true));
 
       try {
         const { updatedCard } = await cardsApi.updateCard(data);
-        await dispatch(cardsThunks.setCurrent(updatedCard.cardsPack_id));
         dispatch(
           appActions.setSnackbarMessage(
             `Pack "${updatedCard.question}" was updated`
           )
         );
+
+        return updatedCard;
       } catch (e) {
         handleApiError(e, dispatch);
       } finally {

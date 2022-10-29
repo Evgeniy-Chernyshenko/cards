@@ -74,8 +74,15 @@ export const PacksTable = () => {
   };
 
   const handleDeletePack = (id: string) => async () => {
-    (await dispatch(packsThunks.deletePack({ id }))) &&
-      dispatch(packsThunks.setCurrent());
+    const deletedCardsPack = await dispatch(packsThunks.deletePack({ id }));
+
+    if (!deletedCardsPack) {
+      return;
+    }
+
+    current && current.items.length > 1
+      ? dispatch(packsThunks.setCurrent())
+      : dispatch(packsActions.setFilters({ page: 1 }));
   };
 
   const handleEditPack = (id: string) => {
