@@ -13,13 +13,15 @@ import {
 } from "@mui/material";
 import styled from "@emotion/styled";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { ChangeEvent } from "react";
+import { ChangeEvent, ReactNode, useState } from "react";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { packsActions, packsThunks } from "../../store/packs-reducer";
 import { TableRowsSkeleton } from "../../components/TableRowsSkeleton";
 import { Delete, ModeEdit, School } from "@mui/icons-material";
 import { PATHS } from "../../app/AppRoutes";
 import { Link } from "react-router-dom";
+import { DeletePackModal } from "./DeletePackModal";
+import { EditPackInputsType, EditPackModal } from "./EditPackModal";
 
 const PaginationContainer = styled.div`
   margin-top: 30px;
@@ -43,6 +45,7 @@ export const PacksTable = () => {
   const filters = useAppSelector((state) => state.packs.filters);
   const dispatch = useAppDispatch();
   const activeSort = getActiveSortColumn(filters.sortPacks || "0updated");
+  const [Modal, setModal] = useState<ReactNode>(null);
 
   const handleRowsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -73,27 +76,46 @@ export const PacksTable = () => {
     dispatch(packsActions.setFilters({ sortPacks: domainDirection + column }));
   };
 
+  const handleClickDeletePack = (id: string, name: string) => () => {
+    setModal(
+      <DeletePackModal
+        name={name}
+        onClose={() => setModal(null)}
+        onDelete={handleDeletePack(id)}
+      />
+    );
+  };
+
   const handleDeletePack = (id: string) => async () => {
     const deletedCardsPack = await dispatch(packsThunks.deletePack({ id }));
 
-    if (!deletedCardsPack) {
+    if (!deletedCardsPack || !current) {
       return;
     }
 
-    current && current.items.length > 1
+    current.items.length > 1 || filters.page === 1
       ? dispatch(packsThunks.setCurrent())
       : dispatch(packsActions.setFilters({ page: 1 }));
   };
 
-  const handleEditPack = (id: string) => {
-    return async () => {
-      (await dispatch(
-        packsThunks.updatePack({
-          _id: id,
-          name: `Edited pack ${Date.now()}`,
-        })
-      )) && dispatch(packsThunks.setCurrent());
+  const handleClickEditPack =
+    (id: string, values: EditPackInputsType) => () => {
+      setModal(
+        <EditPackModal
+          values={values}
+          onClose={() => setModal(null)}
+          onSave={handleEditPack(id)}
+        />
+      );
     };
+
+  const handleEditPack = (id: string) => async (values: EditPackInputsType) => {
+    (await dispatch(
+      packsThunks.updatePack({
+        _id: id,
+        ...values,
+      })
+    )) && dispatch(packsThunks.setCurrent());
   };
 
   return (
@@ -170,7 +192,11 @@ export const PacksTable = () => {
                     },
                   }}
                 >
-                  <TableCell>
+                  <TableCell
+                    sx={{
+                      wordBreak: "break-all",
+                    }}
+                  >
                     <Link to={`${PATHS.packs}/${v._id}`}>{v.name}</Link>
                   </TableCell>
                   <TableCell>{v.cardsCount}</TableCell>
@@ -180,8 +206,18 @@ export const PacksTable = () => {
                       timeStyle: "short",
                     })}
                   </TableCell>
-                  <TableCell>{v.user_name}</TableCell>
-                  <TableCell>
+                  <TableCell
+                    sx={{
+                      wordBreak: "break-all",
+                    }}
+                  >
+                    {v.user_name}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     {!!v.cardsCount && (
                       <IconButton disabled={isLoading} size="small">
                         <School />
@@ -191,14 +227,17 @@ export const PacksTable = () => {
                       <>
                         <IconButton
                           disabled={isLoading}
-                          onClick={handleEditPack(v._id)}
+                          onClick={handleClickEditPack(v._id, {
+                            name: v.name,
+                            private: v.private,
+                          })}
                           size="small"
                         >
                           <ModeEdit />
                         </IconButton>
                         <IconButton
                           disabled={isLoading}
-                          onClick={handleDeletePack(v._id)}
+                          onClick={handleClickDeletePack(v._id, v.name)}
                           size="small"
                         >
                           <Delete />
@@ -249,6 +288,7 @@ export const PacksTable = () => {
               }}
             />
           </PaginationContainer>
+          {Modal}
         </>
       )}
     </>

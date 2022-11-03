@@ -55,3 +55,7 @@ h2 {
 a {
   color: var(--link-color1);
 }
+
+#notistack-snackbar {
+  word-break: break-all;
+}

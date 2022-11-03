@@ -1,8 +1,9 @@
 import styled from "@emotion/styled";
 import { Button } from "@mui/material";
 import _ from "lodash";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { AddPackModal, AddPackInputsType } from "./AddPackModal";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { packsActions, packsThunks } from "../../store/packs-reducer";
@@ -29,6 +30,7 @@ export const PacksPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isInit, setIsInit] = useState(false);
   const setSearchParamsRef = useRef(setSearchParams);
+  const [Modal, setModal] = useState<ReactNode>(null);
 
   useEffect(() => {
     return () => {
@@ -68,10 +70,15 @@ export const PacksPage = () => {
       );
   }, [filters, isInit, setSearchParamsRef]);
 
-  const handleAddNewPack = async () => {
-    (await dispatch(
-      packsThunks.createPack({ name: `New pack ${Date.now()}` })
-    )) && dispatch(packsThunks.setCurrent());
+  const handleClickAddNewPack = () => {
+    setModal(
+      <AddPackModal onClose={() => setModal(null)} onSave={handleAddNewPack} />
+    );
+  };
+
+  const handleAddNewPack = async (values: AddPackInputsType) => {
+    (await dispatch(packsThunks.createPack(values))) &&
+      dispatch(packsThunks.setCurrent());
   };
 
   return (
@@ -81,7 +88,7 @@ export const PacksPage = () => {
         <Button
           variant="contained"
           disabled={isLoading}
-          onClick={handleAddNewPack}
+          onClick={handleClickAddNewPack}
         >
           Add new pack
         </Button>
@@ -90,6 +97,7 @@ export const PacksPage = () => {
         <PacksFilters />
       </PacksFiltersContainer>
       <PacksTable />
+      {Modal}
     </>
   );
 };

@@ -173,7 +173,15 @@ export const cardsThunks = {
     },
   updateCard:
     (data: UpdateCardParamsType): AppThunk<Promise<CardType | void>> =>
-    async (dispatch) => {
+    async (dispatch, getState) => {
+      const candidatUpdatedCard = getState().cards.current?.items.find(
+        (v) => v._id === data._id
+      );
+
+      if (_.isEqual(candidatUpdatedCard, { ...candidatUpdatedCard, ...data })) {
+        return;
+      }
+
       dispatch(appActions.setIsLoading(true));
 
       try {

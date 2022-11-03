@@ -6,7 +6,7 @@ import {
   ListItemIcon,
   MenuItem,
 } from "@mui/material";
-import { useEffect, useState, MouseEvent, useRef } from "react";
+import { useEffect, useState, MouseEvent, useRef, ReactNode } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
@@ -24,6 +24,9 @@ import { packsThunks } from "../../store/packs-reducer";
 import { PATHS } from "../../app/AppRoutes";
 import { convertString } from "../../utils/convertString";
 import _ from "lodash";
+import { DeletePackModal } from "../PacksPage/DeletePackModal";
+import { EditPackInputsType, EditPackModal } from "../PacksPage/EditPackModal";
+import { AddCardInputsType, AddCardModal } from "./AddCardModal";
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -71,9 +74,13 @@ export const CardsPage = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const [editedPackName, setEditedPackName] = useState<null | string>(null);
+  const [editedPackPrivate, setEditedPackPrivate] = useState<null | boolean>(
+    null
+  );
   const [isChangePackLoading, setIsChangePackLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const setSearchParamsRef = useRef(setSearchParams);
+  const [Modal, setModal] = useState<ReactNode>(null);
 
   useEffect(() => {
     return () => {
@@ -110,7 +117,16 @@ export const CardsPage = () => {
       );
   }, [filters, isInit]);
 
-  if (!current) {
+  useEffect(() => {
+    if (!current) {
+      return;
+    }
+
+    setEditedPackName(current.packName);
+    setEditedPackPrivate(current.packPrivate);
+  }, [current]);
+
+  if (!current || !packId || !editedPackName || _.isNull(editedPackPrivate)) {
     return (
       <LoaderWrapper>
         <CircularProgress size={60} />
@@ -126,15 +142,17 @@ export const CardsPage = () => {
     setAnchorEl(null);
   };
 
-  const handleAddCard = async () => {
-    if (!packId) {
-      return;
-    }
+  const handleClickAddCard = () => {
+    setModal(
+      <AddCardModal onClose={() => setModal(null)} onSave={handleAddCard} />
+    );
+  };
 
+  const handleAddCard = async (values: AddCardInputsType) => {
     const newCard = await dispatch(
       cardsThunks.createCard({
         cardsPack_id: packId,
-        question: `New question ${Date.now()}`,
+        ...values,
       })
     );
 
@@ -143,8 +161,23 @@ export const CardsPage = () => {
 
   const handleLearnPack = () => {};
 
-  const handleEditPack = async () => {
-    if (!packId) {
+  const handleClickEditPack = () => {
+    setModal(
+      <EditPackModal
+        onClose={() => setModal(null)}
+        onSave={handleEditPack}
+        values={{
+          name: editedPackName,
+          private: editedPackPrivate,
+        }}
+      />
+    );
+  };
+
+  const handleEditPack = async (values: EditPackInputsType) => {
+    if (
+      _.isEqual(values, { name: editedPackName, private: editedPackPrivate })
+    ) {
       return;
     }
 
@@ -153,20 +186,31 @@ export const CardsPage = () => {
     const updatedCardsPack = await dispatch(
       packsThunks.updatePack({
         _id: packId,
-        name: `Edited pack ${Date.now()}`,
+        ...values,
       })
     );
 
     setIsChangePackLoading(false);
 
-    updatedCardsPack && setEditedPackName(updatedCardsPack.name);
-  };
-
-  const handleDeletePack = async () => {
-    if (!packId) {
+    if (!updatedCardsPack) {
       return;
     }
 
+    setEditedPackName(updatedCardsPack.name);
+    setEditedPackPrivate(updatedCardsPack.private);
+  };
+
+  const handleClickDeletePack = () => {
+    setModal(
+      <DeletePackModal
+        name={current.packName}
+        onClose={() => setModal(null)}
+        onDelete={handleDeletePack}
+      />
+    );
+  };
+
+  const handleDeletePack = async () => {
     setIsChangePackLoading(true);
 
     const deletedCardsPack = await dispatch(
@@ -193,7 +237,7 @@ export const CardsPage = () => {
           <Button
             variant="contained"
             disabled={isLoading}
-            onClick={!current.isMyPack ? handleLearnPack : handleAddCard}
+            onClick={!current.isMyPack ? handleLearnPack : handleClickAddCard}
           >
             {!current.isMyPack ? "Learn to pack" : "Add new card"}
           </Button>
@@ -209,7 +253,7 @@ export const CardsPage = () => {
           {current.isMyPack && (
             <Button
               variant="contained"
-              onClick={handleAddCard}
+              onClick={handleClickAddCard}
               disabled={isLoading}
             >
               Add new card
@@ -232,13 +276,13 @@ export const CardsPage = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={handleEditPack}>
+        <MenuItem onClick={handleClickEditPack}>
           <ListItemIcon>
             <ModeEdit />
           </ListItemIcon>
           Edit
         </MenuItem>
-        <MenuItem onClick={handleDeletePack}>
+        <MenuItem onClick={handleClickDeletePack}>
           <ListItemIcon>
             <Delete />
           </ListItemIcon>
@@ -251,6 +295,7 @@ export const CardsPage = () => {
           Learn
         </MenuItem>
       </DropDownMenu>
+      {Modal}
     </>
   );
 };

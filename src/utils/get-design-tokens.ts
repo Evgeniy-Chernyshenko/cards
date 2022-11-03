@@ -101,5 +101,20 @@ export const getDesignTokens = (mode: PaletteMode) => ({
         },
       },
     },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: { fontSize: 18 },
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: { paddingTop: 36, paddingBottom: 36, minWidth: 395 },
+      },
+      defaultProps: {
+        sx: {
+          wordBreak: "break-all",
+        },
+      },
+    },
   },
 });

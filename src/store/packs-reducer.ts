@@ -177,7 +177,15 @@ export const packsThunks = {
     },
   updatePack:
     (data: UpdatePackParamsType): AppThunk<Promise<PackType | void>> =>
-    async (dispatch) => {
+    async (dispatch, getState) => {
+      const candidatUpdatedPack = getState().packs.current?.items.find(
+        (v) => v._id === data._id
+      );
+
+      if (_.isEqual(candidatUpdatedPack, { ...candidatUpdatedPack, ...data })) {
+        return;
+      }
+
       dispatch(appActions.setIsLoading(true));
 
       try {

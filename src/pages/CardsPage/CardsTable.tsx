@@ -14,11 +14,13 @@ import {
   TableRow,
   TableSortLabel,
 } from "@mui/material";
-import { ChangeEvent } from "react";
+import { ChangeEvent, ReactNode, useState } from "react";
 import { TableRowsSkeleton } from "../../components/TableRowsSkeleton";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { cardsActions, cardsThunks } from "../../store/cards-reducer";
+import { DeleteCardModal } from "./DeleteCardModal";
+import { EditCardInputsType, EditCardModal } from "./EditCardModal";
 
 const PaginationContainer = styled.div`
   margin-top: 30px;
@@ -42,6 +44,7 @@ export const CardsTable = (props: PropsType) => {
   const filters = useAppSelector((state) => state.cards.filters);
   const dispatch = useAppDispatch();
   const activeSort = getActiveSortColumn(filters.sortCards || "0updated");
+  const [Modal, setModal] = useState<ReactNode>(null);
 
   const isTableLoading = isLoading && !props.isChangePackLoading;
 
@@ -74,25 +77,46 @@ export const CardsTable = (props: PropsType) => {
     dispatch(cardsActions.setFilters({ sortCards: domainDirection + column }));
   };
 
-  const handleEditCard = (id: string) => async () => {
+  const handleClickEditCard =
+    (id: string, values: EditCardInputsType) => () => {
+      setModal(
+        <EditCardModal
+          values={values}
+          onClose={() => setModal(null)}
+          onSave={handleEditCard(id)}
+        />
+      );
+    };
+
+  const handleEditCard = (id: string) => async (values: EditCardInputsType) => {
     const updatedCard = await dispatch(
       cardsThunks.updateCard({
         _id: id,
-        question: `Edited question ${Date.now()}`,
+        ...values,
       })
     );
 
-    if (!updatedCard || !props.packId) {
+    if (!updatedCard) {
       return;
     }
 
     dispatch(cardsThunks.setCurrent(props.packId));
   };
 
+  const handleClickDeleteCard = (id: string, name: string) => () => {
+    setModal(
+      <DeleteCardModal
+        name={name}
+        onClose={() => setModal(null)}
+        onDelete={handleDeleteCard(id)}
+      />
+    );
+  };
+
   const handleDeleteCard = (id: string) => async () => {
     const deletedCard = await dispatch(cardsThunks.deleteCard({ id }));
 
-    if (!deletedCard || !props.packId || !current) {
+    if (!deletedCard || !current) {
       return;
     }
 
@@ -175,8 +199,20 @@ export const CardsTable = (props: PropsType) => {
                     },
                   }}
                 >
-                  <TableCell>{v.question}</TableCell>
-                  <TableCell>{v.answer}</TableCell>
+                  <TableCell
+                    sx={{
+                      wordBreak: "break-all",
+                    }}
+                  >
+                    {v.question}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      wordBreak: "break-all",
+                    }}
+                  >
+                    {v.answer}
+                  </TableCell>
                   <TableCell>
                     {new Date(v.updated).toLocaleString("ru-RU", {
                       dateStyle: "short",
@@ -187,17 +223,24 @@ export const CardsTable = (props: PropsType) => {
                     <Rating value={v.grade} onChange={() => {}} />
                   </TableCell>
                   {current.isMyPack && (
-                    <TableCell>
+                    <TableCell
+                      sx={{
+                        whiteSpace: "nowrap",
+                      }}
+                    >
                       <IconButton
                         disabled={isTableLoading}
-                        onClick={handleEditCard(v._id)}
+                        onClick={handleClickEditCard(v._id, {
+                          answer: v.answer,
+                          question: v.question,
+                        })}
                         size="small"
                       >
                         <ModeEdit />
                       </IconButton>
                       <IconButton
                         disabled={isTableLoading}
-                        onClick={handleDeleteCard(v._id)}
+                        onClick={handleClickDeleteCard(v._id, v.question)}
                         size="small"
                       >
                         <Delete />
@@ -249,11 +292,12 @@ export const CardsTable = (props: PropsType) => {
           </PaginationContainer>
         </>
       )}
+      {Modal}
     </>
   );
 };
 
 type PropsType = {
   isChangePackLoading: boolean;
-  packId: void | string;
+  packId: string;
 };
