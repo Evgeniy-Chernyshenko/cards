@@ -4,6 +4,7 @@ import { ForgotPasswordForm } from "./ForgotPasswordForm";
 import { PATHS } from "../../app/AppRoutes";
 import { useState } from "react";
 import { CheckEmailScreen } from "./CheckEmailScreen";
+import { WrapContainer } from "../../components/WrapContainer";
 
 const Wrapper = styled.div`
   text-align: center;
@@ -42,15 +43,17 @@ export const ForgotPasswordPage = () => {
   }
 
   return (
-    <Wrapper>
-      <h1>Forgot your password?</h1>
-      <FormContainer>
-        <ForgotPasswordForm onSuccessful={onSuccesfull} />
-      </FormContainer>
-      <TryLoggingInContainer>
-        <SignInText>Did you remember your password?</SignInText>
-        <SignInLink to={PATHS.signin}>Try logging in</SignInLink>
-      </TryLoggingInContainer>
-    </Wrapper>
+    <WrapContainer>
+      <Wrapper>
+        <h1>Forgot your password?</h1>
+        <FormContainer>
+          <ForgotPasswordForm onSuccessful={onSuccesfull} />
+        </FormContainer>
+        <TryLoggingInContainer>
+          <SignInText>Did you remember your password?</SignInText>
+          <SignInLink to={PATHS.signin}>Try logging in</SignInLink>
+        </TryLoggingInContainer>
+      </Wrapper>{" "}
+    </WrapContainer>
   );
 };

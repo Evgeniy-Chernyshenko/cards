@@ -194,8 +194,9 @@ export const CardsTable = (props: PropsType) => {
                       paddingTop: 0,
                       paddingBottom: 0,
                     },
-                    "& td button:first-of-type": {
-                      marginLeft: -1,
+                    "& td:last-child > *": {
+                      position: "relative",
+                      left: "-8px",
                     },
                   }}
                 >
@@ -220,7 +221,7 @@ export const CardsTable = (props: PropsType) => {
                     })}
                   </TableCell>
                   <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }}>
-                    <Rating value={v.grade} onChange={() => {}} />
+                    <Rating value={v.grade} readOnly precision={0.5} />
                   </TableCell>
                   {current.isMyPack && (
                     <TableCell

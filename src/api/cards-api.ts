@@ -15,15 +15,22 @@ export const cardsApi = {
     ).data,
   deleteCard: async (values: DeleteCardParamsType) =>
     (
-      await apiClient.delete<DeleteCardResponseType>("cards/card", {
+      await apiClient.delete<{ deletedCard: CardType }>("cards/card", {
         params: values,
       })
     ).data,
   updateCard: async (values: UpdateCardParamsType) =>
     (
-      await apiClient.put<UpdateCardResponseType>("cards/card", {
+      await apiClient.put<{ updatedCard: CardType }>("cards/card", {
         card: values,
       })
+    ).data,
+  updateCardGrade: async (values: UpdateCardGradeParamsType) =>
+    (
+      await apiClient.put<{ updatedGrade: UpdatedGradeType }>(
+        "cards/grade",
+        values
+      )
     ).data,
 };
 
@@ -91,8 +98,6 @@ type CreateCardResponseType = {
 
 export type DeleteCardParamsType = { id: string };
 
-type DeleteCardResponseType = { deletedCard: CardType };
-
 export type UpdateCardParamsType = {
   _id: string;
   answer?: string;
@@ -107,4 +112,20 @@ export type UpdateCardParamsType = {
   type?: string;
 };
 
-type UpdateCardResponseType = { updatedCard: CardType };
+export type UpdateCardGradeParamsType = {
+  card_id: string;
+  grade: number;
+};
+
+type UpdatedGradeType = {
+  card_id: string;
+  cardsPack_id: string;
+  created: string;
+  grade: number;
+  more_id: string;
+  shots: number;
+  updated: string;
+  user_id: string;
+  __v: number;
+  _id: string;
+};

@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { WrapContainer } from "../../components/WrapContainer";
 import { SetNewPasswordForm } from "./SetNewPasswordForm";
 
 const Wrapper = styled.div`
@@ -7,9 +8,11 @@ const Wrapper = styled.div`
 
 export const SetNewPasswordPage = () => {
   return (
-    <Wrapper>
-      <h1>Create new password</h1>
-      <SetNewPasswordForm />
-    </Wrapper>
+    <WrapContainer>
+      <Wrapper>
+        <h1>Create new password</h1>
+        <SetNewPasswordForm />
+      </Wrapper>{" "}
+    </WrapContainer>
   );
 };

@@ -10,6 +10,7 @@ import { SetNewPasswordPage } from "../pages/SetNewPasswordPage/SetNewPasswordPa
 import { SignInPage } from "../pages/SignInPage/SignInPage";
 import { SignUpPage } from "../pages/SignUpPage/SignUpPage";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { LearnPage } from "../pages/LearnPage/LearnPage";
 
 export enum PATHS {
   index = "/",
@@ -19,6 +20,7 @@ export enum PATHS {
   forgotPassword = "/forgot-password",
   setNewPassword = "/set-new-password",
   packs = "/packs",
+  learn = "/learn",
 }
 
 export const AppRoutes = () => {
@@ -31,7 +33,7 @@ export const AppRoutes = () => {
       <Route
         element={<ProtectedRoute forAuth={false} redirectTo={PATHS.profile} />}
       >
-        <Route element={<BaseLayout center wrap />}>
+        <Route element={<BaseLayout center widthConstraint />}>
           <Route path={PATHS.signin} element={<SignInPage />} />
           <Route path={PATHS.signup} element={<SignUpPage />} />
           <Route path={PATHS.forgotPassword} element={<ForgotPasswordPage />} />
@@ -45,8 +47,11 @@ export const AppRoutes = () => {
       <Route
         element={<ProtectedRoute forAuth={true} redirectTo={PATHS.signin} />}
       >
-        <Route element={<BaseLayout center wrap breadcrumbs />}>
+        <Route element={<BaseLayout center widthConstraint breadcrumbs />}>
           <Route path={PATHS.profile} element={<ProfilePage />} />
+        </Route>
+        <Route element={<BaseLayout center widthConstraint breadcrumbs />}>
+          <Route path={`${PATHS.learn}/:packId`} element={<LearnPage />} />
         </Route>
         <Route element={<BaseLayout />}>
           <Route path={PATHS.packs} element={<PacksPage />} />

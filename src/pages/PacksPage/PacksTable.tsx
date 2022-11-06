@@ -187,8 +187,9 @@ export const PacksTable = () => {
                       paddingTop: 0,
                       paddingBottom: 0,
                     },
-                    "& td button:first-of-type": {
-                      marginLeft: -1,
+                    "& td:last-child > *": {
+                      position: "relative",
+                      left: "-8px",
                     },
                   }}
                 >
@@ -219,7 +220,12 @@ export const PacksTable = () => {
                     }}
                   >
                     {!!v.cardsCount && (
-                      <IconButton disabled={isLoading} size="small">
+                      <IconButton
+                        disabled={isLoading}
+                        size="small"
+                        component={Link}
+                        to={`${PATHS.learn}/${v._id}`}
+                      >
                         <School />
                       </IconButton>
                     )}

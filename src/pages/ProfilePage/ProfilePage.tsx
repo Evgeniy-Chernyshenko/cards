@@ -9,6 +9,7 @@ import { authThunks } from "../../store/auth-reducer";
 import { UserpicChooser } from "./UserpicChooser";
 import userPic from "../../assets/images/mock-user-pic.png";
 import { Editable } from "../../components/Editable";
+import { WrapContainer } from "../../components/WrapContainer";
 
 const Wrapper = styled.div`
   text-align: center;
@@ -45,23 +46,29 @@ export const ProfilePage = () => {
   }
 
   return (
-    <Wrapper>
-      <h1>Personal Information</h1>
-      <PresonalInfoContainer>
-        <UserpicChooser image={userPic} imageDescription={user.name} />
-        <Editable
-          label="Nickname"
-          initialValue={user.name}
-          buttonText="save"
-          emptyValueErrorText="Nickname is required"
-          onEdit={handleEditName}
-          fullWidth
-        />
-        <Email>{user.email}</Email>
-      </PresonalInfoContainer>
-      <Button variant="outlined" startIcon={<Logout />} onClick={handleLogout}>
-        Log out
-      </Button>
-    </Wrapper>
+    <WrapContainer>
+      <Wrapper>
+        <h1>Personal Information</h1>
+        <PresonalInfoContainer>
+          <UserpicChooser image={userPic} imageDescription={user.name} />
+          <Editable
+            label="Nickname"
+            initialValue={user.name}
+            buttonText="save"
+            emptyValueErrorText="Nickname is required"
+            onEdit={handleEditName}
+            fullWidth
+          />
+          <Email>{user.email}</Email>
+        </PresonalInfoContainer>
+        <Button
+          variant="outlined"
+          startIcon={<Logout />}
+          onClick={handleLogout}
+        >
+          Log out
+        </Button>
+      </Wrapper>{" "}
+    </WrapContainer>
   );
 };

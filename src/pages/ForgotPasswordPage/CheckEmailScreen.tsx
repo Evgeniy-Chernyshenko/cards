@@ -3,6 +3,7 @@ import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import { PATHS } from "../../app/AppRoutes";
 import letter from "../../assets/images/letter.svg";
+import { WrapContainer } from "../../components/WrapContainer";
 
 const Wrapper = styled.div`
   display: flex;
@@ -24,16 +25,23 @@ const SentText = styled.span`
 
 export const CheckEmailScreen = (props: PropsType) => {
   return (
-    <Wrapper>
-      <h1>Check Email</h1>
-      <Image src={letter} alt="Letter" />
-      <SentText>
-        We’ve sent an Email with instructions to {props.email}
-      </SentText>
-      <Button component={Link} to={PATHS.signin} variant="contained" fullWidth>
-        Back to login
-      </Button>
-    </Wrapper>
+    <WrapContainer>
+      <Wrapper>
+        <h1>Check Email</h1>
+        <Image src={letter} alt="Letter" />
+        <SentText>
+          We’ve sent an Email with instructions to {props.email}
+        </SentText>
+        <Button
+          component={Link}
+          to={PATHS.signin}
+          variant="contained"
+          fullWidth
+        >
+          Back to login
+        </Button>
+      </Wrapper>{" "}
+    </WrapContainer>
   );
 };
 

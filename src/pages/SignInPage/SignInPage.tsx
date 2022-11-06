@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
 import { SignInForm } from "./SignInForm";
 import { PATHS } from "../../app/AppRoutes";
+import { WrapContainer } from "../../components/WrapContainer";
 
 const Wrapper = styled.div`
   text-align: center;
@@ -30,15 +31,17 @@ const SignInLink = styled(Link)`
 
 export const SignInPage = () => {
   return (
-    <Wrapper>
-      <h1>Sign In</h1>
-      <FormContainer>
-        <SignInForm />
-      </FormContainer>
-      <SignInContainer>
-        <SignInText>Don't have an account?</SignInText>
-        <SignInLink to={PATHS.signup}>Sign Up</SignInLink>
-      </SignInContainer>
-    </Wrapper>
+    <WrapContainer>
+      <Wrapper>
+        <h1>Sign In</h1>
+        <FormContainer>
+          <SignInForm />
+        </FormContainer>
+        <SignInContainer>
+          <SignInText>Don't have an account?</SignInText>
+          <SignInLink to={PATHS.signup}>Sign Up</SignInLink>
+        </SignInContainer>
+      </Wrapper>
+    </WrapContainer>
   );
 };

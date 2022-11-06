@@ -4,6 +4,7 @@ import {
   CardType,
   CreateCardParamsType,
   DeleteCardParamsType,
+  UpdateCardGradeParamsType,
   UpdateCardParamsType,
 } from "../api/cards-api";
 import { handleApiError } from "../utils/handle-api-error";
@@ -60,6 +61,22 @@ export const cardsReducer = (
       };
     }
 
+    case "CARDS/UPDATE_CARD_GRADE": {
+      if (!state.current) {
+        return state;
+      }
+
+      return {
+        ...state,
+        current: {
+          ...state.current,
+          items: state.current.items.map((v) =>
+            v._id === action.payload._id ? { ...v, ...action.payload } : v
+          ),
+        },
+      };
+    }
+
     default: {
       return state;
     }
@@ -77,6 +94,10 @@ export const cardsActions = {
   }),
   clearFilters: () => ({
     type: "CARDS/CLEAR_FILTERS" as const,
+  }),
+  updateCardGrade: (_id: string, grade: number, shots: number) => ({
+    type: "CARDS/UPDATE_CARD_GRADE" as const,
+    payload: { _id, grade, shots },
   }),
 };
 
@@ -193,6 +214,26 @@ export const cardsThunks = {
         );
 
         return updatedCard;
+      } catch (e) {
+        handleApiError(e, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+      }
+    },
+  updateCardGrade:
+    (data: UpdateCardGradeParamsType): AppThunk =>
+    async (dispatch) => {
+      dispatch(appActions.setIsLoading(true));
+
+      try {
+        const { updatedGrade } = await cardsApi.updateCardGrade(data);
+        dispatch(
+          cardsActions.updateCardGrade(
+            updatedGrade.card_id,
+            updatedGrade.grade,
+            updatedGrade.shots
+          )
+        );
       } catch (e) {
         handleApiError(e, dispatch);
       } finally {

@@ -11,12 +11,8 @@ const Wrapper = styled.main`
   flex-direction: column;
 `;
 
-const WrapContainer = styled.div`
+const WidthConstraintContainer = styled.div`
   width: 413px;
-  padding: 40px 30px;
-  box-shadow: var(--shadow2);
-  border-radius: 2px;
-  background-color: var(--bg3);
 `;
 
 const CenterContainer = styled.div`
@@ -27,11 +23,13 @@ const CenterContainer = styled.div`
   justify-content: center;
 `;
 
-export const Main = ({ center, wrap, breadcrumbs }: PropsType) => {
+export const Main = ({ center, widthConstraint, breadcrumbs }: PropsType) => {
   let Component = <Outlet />;
 
-  if (wrap) {
-    Component = <WrapContainer>{Component}</WrapContainer>;
+  if (widthConstraint) {
+    Component = (
+      <WidthConstraintContainer>{Component}</WidthConstraintContainer>
+    );
   }
 
   if (center) {
@@ -51,6 +49,6 @@ export const Main = ({ center, wrap, breadcrumbs }: PropsType) => {
 
 type PropsType = {
   center?: boolean;
-  wrap?: boolean;
+  widthConstraint?: boolean;
   breadcrumbs?: boolean | BreadcrumbsType;
 };

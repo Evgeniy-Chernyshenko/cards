@@ -16,7 +16,11 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-export const BaseLayout = ({ center, wrap, breadcrumbs }: PropsType) => {
+export const BaseLayout = ({
+  center,
+  widthConstraint,
+  breadcrumbs,
+}: PropsType) => {
   const isLoading = useAppSelector((state) => state.app.isLoading);
   const snackbar = useAppSelector((state) => state.app.snackbar);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -51,13 +55,17 @@ export const BaseLayout = ({ center, wrap, breadcrumbs }: PropsType) => {
         <LinearProgress sx={{ position: "fixed", width: "100%", zIndex: 2 }} />
       )}
       <Header />
-      <Main center={center} wrap={wrap} breadcrumbs={breadcrumbs} />
+      <Main
+        center={center}
+        widthConstraint={widthConstraint}
+        breadcrumbs={breadcrumbs}
+      />
     </Wrapper>
   );
 };
 
 type PropsType = {
   center?: boolean;
-  wrap?: boolean;
+  widthConstraint?: boolean;
   breadcrumbs?: boolean | BreadcrumbsType;
 };
