@@ -93,6 +93,9 @@ export const CardsPage = () => {
   const [editedPackPrivate, setEditedPackPrivate] = useState<null | boolean>(
     null
   );
+  const [editedPackDeckCover, setEditedPackDeckCover] = useState<
+    undefined | string
+  >();
   const [isChangePackLoading, setIsChangePackLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const setSearchParamsRef = useRef(setSearchParams);
@@ -140,6 +143,7 @@ export const CardsPage = () => {
 
     setEditedPackName(current.packName);
     setEditedPackPrivate(current.packPrivate);
+    setEditedPackDeckCover(current.packDeckCover);
   }, [current]);
 
   if (!current || !packId || !editedPackName || _.isNull(editedPackPrivate)) {
@@ -183,6 +187,7 @@ export const CardsPage = () => {
         values={{
           name: editedPackName,
           private: editedPackPrivate,
+          deckCover: editedPackDeckCover,
         }}
       />
     );
@@ -190,7 +195,11 @@ export const CardsPage = () => {
 
   const handleEditPack = async (values: EditPackInputsType) => {
     if (
-      _.isEqual(values, { name: editedPackName, private: editedPackPrivate })
+      _.isEqual(values, {
+        name: editedPackName,
+        private: editedPackPrivate,
+        deckCover: editedPackDeckCover,
+      })
     ) {
       return;
     }
@@ -212,6 +221,7 @@ export const CardsPage = () => {
 
     setEditedPackName(updatedCardsPack.name);
     setEditedPackPrivate(updatedCardsPack.private);
+    setEditedPackDeckCover(updatedCardsPack.deckCover);
   };
 
   const handleClickDeletePack = () => {
@@ -259,8 +269,11 @@ export const CardsPage = () => {
           </Button>
         )}
       </HeaderWrapper>
-      {current.packDeckCover && (
-        <PackDeckCover src={current.packDeckCover} alt={current.packName} />
+      {(editedPackDeckCover || current.packDeckCover) && (
+        <PackDeckCover
+          src={editedPackDeckCover || current.packDeckCover}
+          alt={current.packName}
+        />
       )}
       {!current.cardsTotalCount && filters === initialFilters ? (
         <EmptyMessageContainer>

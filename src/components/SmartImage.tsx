@@ -3,6 +3,7 @@ import {
   DetailedHTMLProps,
   ImgHTMLAttributes,
   SyntheticEvent,
+  useEffect,
   useState,
 } from "react";
 
@@ -20,6 +21,10 @@ export const SmartImage = ({
   HTMLImageElement
 >) => {
   const [image, setImage] = useState(src);
+
+  useEffect(() => {
+    setImage(src);
+  }, [src]);
 
   const handleError = (e: SyntheticEvent<HTMLImageElement, Event>) => {
     onError && onError(e);
