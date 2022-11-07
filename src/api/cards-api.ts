@@ -59,6 +59,10 @@ export type CardType = {
   more_id: string;
   created: string;
   updated: string;
+  answerImg?: string;
+  questionImg?: string;
+  questionVideo?: string;
+  answerVideo?: string;
   __v: number;
 };
 

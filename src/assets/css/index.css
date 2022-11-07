@@ -6,10 +6,10 @@
 }
 
 body {
+  line-height: 1.5;
   font-family: "Montserrat";
   font-weight: var(--fw2);
   font-size: 14px;
-  line-height: 175%;
   color: var(--text-color1);
   --fw1: 400;
   --fw2: 500;

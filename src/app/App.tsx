@@ -30,7 +30,7 @@ export const App = () => {
   return (
     <ThemeProvider theme={theme}>
       {isInit ? (
-        <SnackbarProvider maxSnack={3}>
+        <SnackbarProvider maxSnack={1}>
           <HashRouter>
             <AppRoutes />
           </HashRouter>

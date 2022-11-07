@@ -7,6 +7,7 @@ import {
   UpdateUserParamsType,
   UserType,
 } from "../api/auth-api";
+import { getBase64FromFile } from "../utils/getBase64FromFile";
 import { handleApiError } from "../utils/handle-api-error";
 import { appActions } from "./app-reducer";
 import { AppThunk, InferActionTypes } from "./store";
@@ -145,6 +146,20 @@ export const authThunks = {
       }
 
       return isSuccessful;
+    },
+  updateUserAvatar:
+    (file: File): AppThunk =>
+    async (dispatch) => {
+      dispatch(appActions.setIsLoading(true));
+      try {
+        const fileBase64 = await getBase64FromFile(file);
+
+        dispatch(authThunks.updateUser({ avatar: fileBase64 }));
+      } catch (e) {
+        handleApiError(e, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+      }
     },
 };
 

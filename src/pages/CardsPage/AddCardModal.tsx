@@ -4,13 +4,17 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
 import { BaseModal } from "../../components/BaseModal";
 import * as yup from "yup";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { UploadImage } from "../../components/UploadImage";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { appActions } from "../../store/app-reducer";
 
 const FieldsContainer = styled.div`
   display: flex;
@@ -34,14 +38,37 @@ export const AddCardModal = (props: PropsType) => {
     mode: "onChange",
     resolver: yupResolver(schema),
   });
-
-  const onSubmit: SubmitHandler<AddCardInputsType> = (values) => {
-    setOpen(false);
-    props.onSave(values);
-  };
+  const [questionFormat, setQuestionFormat] =
+    useState<QuestionFormatType>("text");
+  const [questionImg, setQuestionImg] = useState<string>();
+  const [answerImg, setAnswerImg] = useState<string>();
+  const dispatch = useAppDispatch();
 
   const handleClose = () => {
     props.onClose();
+  };
+
+  const handleChangeQuestionFormat = (e: SelectChangeEvent) => {
+    setQuestionFormat(e.target.value as QuestionFormatType);
+  };
+
+  const handleActionTextFormat = handleSubmit((values) => {
+    setOpen(false);
+    props.onSave(values);
+  });
+
+  const handleActionImageFormat = () => {
+    if (answerImg && questionImg) {
+      setOpen(false);
+      props.onSave({ answerImg, questionImg });
+    } else {
+      dispatch(
+        appActions.setSnackbarMessage(
+          "Please, select question and answer images",
+          "error"
+        )
+      );
+    }
   };
 
   return (
@@ -51,30 +78,56 @@ export const AddCardModal = (props: PropsType) => {
       actionButtonText="Save"
       setOpen={setOpen}
       onClose={handleClose}
-      onAction={handleSubmit(onSubmit)}
-      wrapForm
+      onAction={
+        questionFormat === "text"
+          ? handleActionTextFormat
+          : handleActionImageFormat
+      }
+      wrapForm={questionFormat === "text"}
     >
       <FieldsContainer>
         <FormControl variant="standard">
           <InputLabel>Choose a question format</InputLabel>
-          <Select value="text" label="Choose a question format">
+          <Select
+            value={questionFormat}
+            label="Choose a question format"
+            onChange={handleChangeQuestionFormat}
+          >
             <MenuItem value="text">Text</MenuItem>
             <MenuItem value="image">Image</MenuItem>
           </Select>
         </FormControl>
-        <TextField
-          label={errors.question ? errors.question.message : "Question"}
-          variant="standard"
-          {...register("question")}
-          error={!!errors.question}
-          autoFocus
-        />
-        <TextField
-          label={errors.answer ? errors.answer.message : "Answer"}
-          variant="standard"
-          {...register("answer")}
-          error={!!errors.answer}
-        />
+        {questionFormat === "text" && (
+          <>
+            <TextField
+              label={errors.question ? errors.question.message : "Question"}
+              variant="standard"
+              {...register("question")}
+              error={!!errors.question}
+              autoFocus
+            />
+            <TextField
+              label={errors.answer ? errors.answer.message : "Answer"}
+              variant="standard"
+              {...register("answer")}
+              error={!!errors.answer}
+            />
+          </>
+        )}
+        {questionFormat === "image" && (
+          <>
+            <UploadImage
+              labelText="Question:"
+              uploadLinkText="Change cover"
+              onUpload={setQuestionImg}
+            />
+            <UploadImage
+              labelText="Answer:"
+              uploadLinkText="Change cover"
+              onUpload={setAnswerImg}
+            />
+          </>
+        )}
       </FieldsContainer>
     </BaseModal>
   );
@@ -86,6 +139,10 @@ type PropsType = {
 };
 
 export type AddCardInputsType = {
-  question: string;
-  answer: string;
+  question?: string;
+  answer?: string;
+  questionImg?: string;
+  answerImg?: string;
 };
+
+type QuestionFormatType = "text" | "image";

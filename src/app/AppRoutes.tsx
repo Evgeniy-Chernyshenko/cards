@@ -1,7 +1,6 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { BaseLayout } from "../layouts/BaseLayout/BaseLayout";
 import { ForgotPasswordPage } from "../pages/ForgotPasswordPage/ForgotPasswordPage";
-import { HomePage } from "../pages/HomePage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { CardsPage } from "../pages/CardsPage/CardsPage";
 import { PacksPage } from "../pages/PacksPage/PacksPage";
@@ -26,9 +25,7 @@ export enum PATHS {
 export const AppRoutes = () => {
   return (
     <Routes>
-      <Route element={<BaseLayout />}>
-        <Route path={PATHS.index} element={<HomePage />} />
-      </Route>
+      <Route index element={<Navigate to={PATHS.packs} />} />
 
       <Route
         element={<ProtectedRoute forAuth={false} redirectTo={PATHS.profile} />}
@@ -61,16 +58,7 @@ export const AppRoutes = () => {
         </Route>
       </Route>
 
-      <Route
-        element={
-          <BaseLayout
-            center
-            breadcrumbs={{
-              items: [{ value: "Back to home", path: PATHS.index }],
-            }}
-          />
-        }
-      >
+      <Route element={<BaseLayout center />}>
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

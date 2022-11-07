@@ -5,6 +5,7 @@ import { BaseModal } from "../../components/BaseModal";
 import * as yup from "yup";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { UploadImage } from "../../components/UploadImage";
 
 const FieldsContainer = styled.div`
   display: flex;
@@ -29,10 +30,11 @@ export const EditPackModal = (props: PropsType) => {
     resolver: yupResolver(schema),
     defaultValues: props.values,
   });
+  const [deckCover, setDeckCover] = useState(props.values.deckCover);
 
   const onSubmit: SubmitHandler<EditPackInputsType> = (values) => {
     setOpen(false);
-    props.onSave(values);
+    props.onSave({ ...values, deckCover });
   };
 
   const handleClose = () => {
@@ -50,6 +52,12 @@ export const EditPackModal = (props: PropsType) => {
       wrapForm
     >
       <FieldsContainer>
+        <UploadImage
+          labelText="Cover"
+          uploadLinkText="Change cover"
+          onUpload={setDeckCover}
+          image={deckCover}
+        />
         <TextField
           label={errors.name ? errors.name.message : "Name pack"}
           variant="standard"
@@ -85,4 +93,5 @@ type PropsType = {
 export type EditPackInputsType = {
   name: string;
   private: boolean;
+  deckCover?: string;
 };

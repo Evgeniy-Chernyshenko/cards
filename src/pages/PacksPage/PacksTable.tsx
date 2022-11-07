@@ -22,12 +22,19 @@ import { PATHS } from "../../app/AppRoutes";
 import { Link } from "react-router-dom";
 import { DeletePackModal } from "./DeletePackModal";
 import { EditPackInputsType, EditPackModal } from "./EditPackModal";
+import { TableImage } from "../../components/TableImage";
 
 const PaginationContainer = styled.div`
   margin-top: 30px;
   display: flex;
   align-items: center;
   gap: 30px;
+`;
+
+const PackLink = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 `;
 
 const getActiveSortColumn = (sortString: string) => {
@@ -198,7 +205,12 @@ export const PacksTable = () => {
                       wordBreak: "break-all",
                     }}
                   >
-                    <Link to={`${PATHS.packs}/${v._id}`}>{v.name}</Link>
+                    <PackLink to={`${PATHS.packs}/${v._id}`}>
+                      {v.deckCover && (
+                        <TableImage src={v.deckCover} alt={v.name} />
+                      )}
+                      {v.name}
+                    </PackLink>
                   </TableCell>
                   <TableCell>{v.cardsCount}</TableCell>
                   <TableCell>
@@ -236,6 +248,7 @@ export const PacksTable = () => {
                           onClick={handleClickEditPack(v._id, {
                             name: v.name,
                             private: v.private,
+                            deckCover: v.deckCover,
                           })}
                           size="small"
                         >

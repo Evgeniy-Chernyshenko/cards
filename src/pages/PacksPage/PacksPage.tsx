@@ -52,9 +52,16 @@ export const PacksPage = () => {
         sortPacks: searchParams.get("sortPacks"),
         page: convertString<number>(searchParams.get("page")),
         pageCount: convertString<number>(searchParams.get("pageCount")),
-        showMyPacks: convertString<boolean>(searchParams.get("showMyPacks")),
+        showMyPacks: convertString<boolean>(
+          searchParams.get("showMyPacks") || localStorage.getItem("showMyPacks")
+        ),
       },
       _.isNil
+    );
+
+    localStorage.setItem(
+      "showMyPacks",
+      String(!!searchParamsFilters.showMyPacks)
     );
 
     dispatch(packsActions.setFilters(searchParamsFilters));

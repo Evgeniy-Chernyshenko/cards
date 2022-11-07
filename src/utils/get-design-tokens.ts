@@ -17,6 +17,7 @@ export const getDesignTokens = (mode: PaletteMode) => ({
           fontSize: 16,
           paddingLeft: "25px",
           paddingRight: "25px",
+          flexShrink: 0,
         },
       },
       styleOverrides: {
@@ -108,7 +109,7 @@ export const getDesignTokens = (mode: PaletteMode) => ({
     },
     MuiDialogContent: {
       styleOverrides: {
-        root: { paddingTop: 36, paddingBottom: 36, minWidth: 395 },
+        root: { paddingTop: 36, paddingBottom: 36, width: 395 },
       },
       defaultProps: {
         sx: {

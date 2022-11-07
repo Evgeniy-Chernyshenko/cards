@@ -15,6 +15,7 @@ import {
   TableSortLabel,
 } from "@mui/material";
 import { ChangeEvent, ReactNode, useState } from "react";
+import { TableImage } from "../../components/TableImage";
 import { TableRowsSkeleton } from "../../components/TableRowsSkeleton";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
@@ -203,16 +204,24 @@ export const CardsTable = (props: PropsType) => {
                   <TableCell
                     sx={{
                       wordBreak: "break-all",
+                      paddingTop: 0,
+                      paddingBottom: 0,
                     }}
                   >
-                    {v.question}
+                    {v.questionImg ? (
+                      <TableImage src={v.questionImg} />
+                    ) : (
+                      v.question
+                    )}
                   </TableCell>
                   <TableCell
                     sx={{
                       wordBreak: "break-all",
+                      paddingTop: 0,
+                      paddingBottom: 0,
                     }}
                   >
-                    {v.answer}
+                    {v.answerImg ? <TableImage src={v.answerImg} /> : v.answer}
                   </TableCell>
                   <TableCell>
                     {new Date(v.updated).toLocaleString("ru-RU", {
@@ -234,6 +243,8 @@ export const CardsTable = (props: PropsType) => {
                         onClick={handleClickEditCard(v._id, {
                           answer: v.answer,
                           question: v.question,
+                          questionImg: v.questionImg,
+                          answerImg: v.answerImg,
                         })}
                         size="small"
                       >

@@ -1,7 +1,7 @@
 import mockUserPic from "../../../assets/images/mock-user-pic.png";
 import { ListItemIcon, MenuItem } from "@mui/material";
 import { Person, Logout } from "@mui/icons-material";
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useLayoutEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
 import { authThunks } from "../../../store/auth-reducer";
@@ -9,6 +9,7 @@ import styled from "@emotion/styled";
 import { RootStateType } from "../../../store/store";
 import { PATHS } from "../../../app/AppRoutes";
 import { DropDownMenu } from "../../../components/DropDownMenu";
+import { SmartImage } from "../../../components/SmartImage";
 
 const Wrapper = styled.div`
   display: flex;
@@ -20,8 +21,11 @@ const Wrapper = styled.div`
   align-self: stretch;
 `;
 
-const UserPic = styled.img`
+const UserPic = styled(SmartImage)`
   width: 36px;
+  height: 36px;
+  border-radius: 100%;
+  object-fit: cover;
   display: block;
 `;
 
@@ -33,6 +37,11 @@ const UserName = styled.span`
 export const UserItem = (props: NonNullable<RootStateType["auth"]["user"]>) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const dispatch = useAppDispatch();
+  const [image, setImage] = useState(props.avatar || mockUserPic);
+
+  useLayoutEffect(() => {
+    setImage(props.avatar || mockUserPic);
+  }, [props.avatar]);
 
   const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -50,7 +59,7 @@ export const UserItem = (props: NonNullable<RootStateType["auth"]["user"]>) => {
     <>
       <Wrapper onClick={handleClick}>
         <UserName>{props.name}</UserName>
-        <UserPic src={mockUserPic} alt={props.name} />
+        <UserPic src={image} alt={props.name} />
       </Wrapper>
       <DropDownMenu
         anchorEl={anchorEl}

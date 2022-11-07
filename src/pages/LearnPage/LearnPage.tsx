@@ -11,6 +11,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { CardType } from "../../api/cards-api";
 import { PATHS } from "../../app/AppRoutes";
+import { SmartImage } from "../../components/SmartImage";
 import { WrapContainer } from "../../components/WrapContainer";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
@@ -64,6 +65,14 @@ const RateTitle = styled.span`
   font-weight: var(--fw1);
   display: block;
   margin-bottom: 5px;
+`;
+
+const CardImage = styled(SmartImage)`
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  margin-top: 5px;
 `;
 
 const getRandomCard = (cardItems: CardType[]) => {
@@ -154,7 +163,12 @@ export const LearnPage = () => {
         <Wrapper>
           <TextContainer>
             <QAContainer>
-              <QATitle>Question:</QATitle> {randomCard.question}
+              <QATitle>Question:</QATitle>{" "}
+              {randomCard.questionImg ? (
+                <CardImage src={randomCard.questionImg} />
+              ) : (
+                randomCard.question
+              )}
             </QAContainer>
             <AttemptsContainer>
               Количество попыток ответов на вопрос:{" "}
@@ -164,7 +178,12 @@ export const LearnPage = () => {
           {isShowAnswer && (
             <>
               <QAContainer>
-                <QATitle>Answer:</QATitle> {randomCard.answer}
+                <QATitle>Answer:</QATitle>{" "}
+                {randomCard.answerImg ? (
+                  <CardImage src={randomCard.answerImg} />
+                ) : (
+                  randomCard.answer
+                )}
               </QAContainer>
               <RateContainer>
                 <RateTitle>Rate yourself:</RateTitle>

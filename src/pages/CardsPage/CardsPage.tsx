@@ -32,6 +32,7 @@ import _ from "lodash";
 import { DeletePackModal } from "../PacksPage/DeletePackModal";
 import { EditPackInputsType, EditPackModal } from "../PacksPage/EditPackModal";
 import { AddCardInputsType, AddCardModal } from "./AddCardModal";
+import { SmartImage } from "../../components/SmartImage";
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -45,6 +46,8 @@ const HeaderContainer = styled.div`
   display: flex;
   gap: 10px;
   align-items: center;
+  flex-grow: 1;
+  word-break: break-all;
 `;
 
 const LoaderWrapper = styled.div`
@@ -67,6 +70,14 @@ const EmptyMessage = styled.span`
   font-weight: var(--fw1);
   align-items: center;
   margin-top: 80px;
+`;
+
+const PackDeckCover = styled(SmartImage)`
+  width: 170px;
+  height: 107px;
+  border-radius: 6px;
+  object-fit: cover;
+  margin-bottom: 25px;
 `;
 
 export const CardsPage = () => {
@@ -248,6 +259,9 @@ export const CardsPage = () => {
           </Button>
         )}
       </HeaderWrapper>
+      {current.packDeckCover && (
+        <PackDeckCover src={current.packDeckCover} alt={current.packName} />
+      )}
       {!current.cardsTotalCount && filters === initialFilters ? (
         <EmptyMessageContainer>
           <EmptyMessage>
@@ -293,12 +307,14 @@ export const CardsPage = () => {
           </ListItemIcon>
           Delete
         </MenuItem>
-        <MenuItem component={Link} to={`${PATHS.learn}/${packId}`}>
-          <ListItemIcon>
-            <School />
-          </ListItemIcon>
-          Learn
-        </MenuItem>
+        {!!current.cardsTotalCount && (
+          <MenuItem component={Link} to={`${PATHS.learn}/${packId}`}>
+            <ListItemIcon>
+              <School />
+            </ListItemIcon>
+            Learn
+          </MenuItem>
+        )}
       </DropDownMenu>
       {Modal}
     </>

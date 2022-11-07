@@ -57,7 +57,7 @@ export const SignInForm = () => {
   const onSubmit: SubmitHandler<Inputs> = async (values) => {
     const isSuccessful = await dispatch(authThunks.signin(values));
 
-    isSuccessful && navigate(PATHS.profile, { replace: true });
+    isSuccessful && navigate(PATHS.packs, { replace: true });
   };
 
   const handleClickShowPassword = () => {
