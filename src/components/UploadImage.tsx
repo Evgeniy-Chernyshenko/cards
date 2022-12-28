@@ -74,7 +74,12 @@ export const UploadImage = (props: PropsType) => {
         <Label>{props.labelText}</Label>
         <UploadLink>
           {props.uploadLinkText}
-          <FileInput type="file" accept="image/*" onChange={handleUpload} />
+          <FileInput
+            type="file"
+            accept="image/*"
+            name="files"
+            onChange={handleUpload}
+          />
         </UploadLink>
       </UploadContainer>
       {image && <Image src={image} alt="Cover" onError={handleImageError} />}
